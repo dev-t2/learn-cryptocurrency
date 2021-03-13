@@ -8,14 +8,21 @@ import { Loading, Weather } from './src/components';
 
 const App: FC = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [condition, setCondition] = useState<condition>('Clear');
   const [temp, setTemp] = useState(0);
 
   const getWeather = useCallback(async (latitude: number, longitude: number) => {
-    const { data } = await axios.get(
+    const {
+      data: {
+        main: { temp },
+        weather,
+      },
+    } = await axios.get(
       `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${API_KEY}`
     );
 
-    setTemp(Math.round(data.main.temp));
+    setCondition(weather[0].main);
+    setTemp(Math.round(temp));
   }, []);
 
   const getLocation = useCallback(async () => {
@@ -26,7 +33,7 @@ const App: FC = () => {
         coords: { latitude, longitude },
       } = await Location.getCurrentPositionAsync();
 
-      getWeather(latitude, longitude);
+      await getWeather(latitude, longitude);
 
       setIsLoading(false);
     } catch (e) {
@@ -38,7 +45,7 @@ const App: FC = () => {
     getLocation();
   }, []);
 
-  return isLoading ? <Loading /> : <Weather temp={temp} />;
+  return isLoading ? <Loading /> : <Weather condition={condition} temp={temp} />;
 };
 
 export default memo(App);

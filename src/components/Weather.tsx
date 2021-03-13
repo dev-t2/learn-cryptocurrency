@@ -10,10 +10,11 @@ const styles = StyleSheet.create({
 });
 
 interface IWeather {
+  condition: condition;
   temp: number;
 }
 
-const Weather: FC<IWeather> = ({ temp }) => {
+const Weather: FC<IWeather> = ({ condition, temp }) => {
   return (
     <View style={styles.container}>
       <Text>{temp}</Text>
