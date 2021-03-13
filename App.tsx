@@ -3,17 +3,19 @@ import { Alert } from 'react-native';
 import * as Location from 'expo-location';
 import axios from 'axios';
 
-import { API_KEY } from './apiKey';
-import { Loading } from './src/components';
+import API_KEY from './apiKey';
+import { Loading, Weather } from './src/components';
 
 const App: FC = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [temp, setTemp] = useState(0);
 
-  const getWeather = useCallback(async (latitude, longitude) => {
+  const getWeather = useCallback(async (latitude: number, longitude: number) => {
     const { data } = await axios.get(
-      `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${API_KEY}`
+      `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${API_KEY}`
     );
-    console.log(data);
+
+    setTemp(Math.round(data.main.temp));
   }, []);
 
   const getLocation = useCallback(async () => {
@@ -36,7 +38,7 @@ const App: FC = () => {
     getLocation();
   }, []);
 
-  return isLoading ? <Loading /> : null;
+  return isLoading ? <Loading /> : <Weather temp={temp} />;
 };
 
 export default memo(App);
