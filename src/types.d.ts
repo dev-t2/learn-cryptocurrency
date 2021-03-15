@@ -14,3 +14,14 @@ type condition =
   | 'Tornado'
   | 'Clear'
   | 'Clouds';
+
+type weatherIcon = {
+  name: condition;
+  size: number;
+  color: string;
+};
+
+type weather = {
+  condition: condition;
+  temp: number;
+};

@@ -1,5 +1,5 @@
 import React, { FC, memo, useCallback, useEffect, useState } from 'react';
-import { Alert } from 'react-native';
+import { Alert, StatusBar } from 'react-native';
 import * as Location from 'expo-location';
 import axios from 'axios';
 
@@ -45,7 +45,13 @@ const App: FC = () => {
     getLocation();
   }, []);
 
-  return isLoading ? <Loading /> : <Weather condition={condition} temp={temp} />;
+  return (
+    <>
+      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+
+      {isLoading ? <Loading /> : <Weather condition={condition} temp={temp} />}
+    </>
+  );
 };
 
 export default memo(App);
