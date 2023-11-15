@@ -2,14 +2,25 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
+
+	"github.com/dev-t2/learn-cryptocurrency/02-explorer/blockchain"
 )
+
+type homeData struct {
+	PageTitle string
+	Blocks []*blockchain.Block
+}
 
 const port = ":8080"
 
 func home (w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Home")
+	html := template.Must(template.ParseFiles("02-explorer/templates/home.html"))
+	data := homeData{"Home", blockchain.GetBlockchain().AllBlocks()}
+
+	html.Execute(w, data)
 }
 
 func main() {
