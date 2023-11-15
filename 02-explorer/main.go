@@ -17,7 +17,7 @@ type homeData struct {
 const port = ":8080"
 
 func home (w http.ResponseWriter, r *http.Request) {
-	html := template.Must(template.ParseFiles("02-explorer/templates/home.html"))
+	html := template.Must(template.ParseFiles("02-explorer/templates/pages/home.html"))
 	data := homeData{"Home", blockchain.GetBlockchain().AllBlocks()}
 
 	html.Execute(w, data)
