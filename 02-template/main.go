@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/dev-t2/learn-cryptocurrency/02-explorer/blockchain"
+	"github.com/dev-t2/learn-cryptocurrency/02-template/blockchain"
 )
 
 type homeData struct {
@@ -17,7 +17,7 @@ type homeData struct {
 const port = ":8080"
 
 func home (w http.ResponseWriter, r *http.Request) {
-	html := template.Must(template.ParseFiles("02-explorer/templates/pages/home.html"))
+	html := template.Must(template.ParseFiles("02-template/templates/pages/home.html"))
 	data := homeData{"Home", blockchain.GetBlockchain().AllBlocks()}
 
 	html.Execute(w, data)
