@@ -1,4 +1,4 @@
-package main
+package explorer
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/dev-t2/learn-cryptocurrency/01-blockchain/blockchain"
+	"github.com/dev-t2/learn-cryptocurrency/blockchain"
 )
 
 type homeData struct {
@@ -16,7 +16,7 @@ type homeData struct {
 
 const (
 	port = ":8080"
-	dir = "02-explorer/templates"
+	dir = "explorer/templates"
 )
 
 var templates *template.Template
@@ -42,7 +42,7 @@ func addHandler (res http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func main() {
+func Start() {
 	templates = template.Must(template.ParseGlob(dir + "/pages/*.html"))
 	templates = template.Must(templates.ParseGlob(dir + "/partials/*.html"))
 
