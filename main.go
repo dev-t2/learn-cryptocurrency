@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/dev-t2/learn-cryptocurrency/blockchain"
+	"github.com/dev-t2/learn-cryptocurrency/utils"
 )
 
 const port = ":8080"
@@ -24,7 +27,11 @@ type URLDescription struct {
 	Payload     string `json:"payload,omitempty"`
 }
 
-func documentation(res http.ResponseWriter, req *http.Request) {
+type AddBlock struct {
+	Data string
+}
+
+func docs(res http.ResponseWriter, req *http.Request) {
 	res.Header().Add("Content-Type", "application/json")
 	
 	data := []URLDescription{
@@ -35,17 +42,46 @@ func documentation(res http.ResponseWriter, req *http.Request) {
 		},
 		{ 
 			URL: URL("/blocks"), 
+			Method: "GET", 
+			Description: "Blocks",
+		},
+		{ 
+			URL: URL("/blocks"), 
 			Method: "POST", 
 			Description: "Add Block", 
-			Payload: "data:string", 
+			Payload: "data: string", 
+		},
+		{ 
+			URL: URL("/blocks/{id}"), 
+			Method: "GET", 
+			Description: "Block",
 		},
 	}
 
 	json.NewEncoder(res).Encode(data)
 }
 
+func blocks(res http.ResponseWriter, req *http.Request) {
+	switch req.Method {
+	case "GET":
+		res.Header().Add("Content-Type", "application/json")
+
+		json.NewEncoder(res).Encode(blockchain.GetBlockchain().AllBlocks())
+	case "POST":
+		var addBlock AddBlock
+
+		utils.HandleErr(json.NewDecoder(req.Body).Decode(&addBlock)) 
+
+		blockchain.GetBlockchain().AddBlock(addBlock.Data)
+
+		res.WriteHeader(http.StatusCreated)
+	}
+}
+
 func main() {
-	http.HandleFunc("/", documentation)
+	http.HandleFunc("/", docs)
+
+	http.HandleFunc("/blocks", blocks)
 
 	fmt.Printf("Listening on http://localhost%s\n", port)
 
