@@ -9,8 +9,16 @@ import (
 
 const port = ":8080"
 
+type URL string
+
+func (u URL) MarshalText() ([]byte, error) {
+	url := fmt.Sprintf("http://localhost%s%s", port, u)
+
+	return []byte(url), nil
+}
+
 type URLDescription struct {
-	URL         string `json:"url"`
+	URL         URL    `json:"url"`
 	Method      string `json:"method"`
 	Description string `json:"description"`
 	Payload     string `json:"payload,omitempty"`
@@ -20,8 +28,17 @@ func documentation(res http.ResponseWriter, req *http.Request) {
 	res.Header().Add("Content-Type", "application/json")
 	
 	data := []URLDescription{
-		{ URL: "/", Method: "GET", Description: "Documentation" },
-		{ URL: "/blocks", Method: "POST", Description: "Add Block", Payload: "data:string" },
+		{ 
+			URL: URL("/"), 
+			Method: "GET", 
+			Description: "Documentation",
+		},
+		{ 
+			URL: URL("/blocks"), 
+			Method: "POST", 
+			Description: "Add Block", 
+			Payload: "data:string", 
+		},
 	}
 
 	json.NewEncoder(res).Encode(data)
