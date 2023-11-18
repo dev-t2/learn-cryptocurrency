@@ -5,28 +5,26 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-
-	"github.com/dev-t2/learn-cryptocurrency/utils"
 )
 
 const port = ":8080"
 
 type URLDescription struct {
-	URL         string
-	Method      string
-	Description string
+	URL         string `json:"url"`
+	Method      string `json:"method"`
+	Description string `json:"description"`
+	Payload     string `json:"payload,omitempty"`
 }
 
 func documentation(res http.ResponseWriter, req *http.Request) {
+	res.Header().Add("Content-Type", "application/json")
+	
 	data := []URLDescription{
-		{ URL: "/", Method: "GET", Description: "Get Documentation" },
+		{ URL: "/", Method: "GET", Description: "Documentation" },
+		{ URL: "/blocks", Method: "POST", Description: "Add Block", Payload: "data:string" },
 	}
 
-	b, err := json.Marshal(data)
-
-	utils.HandleErr(err)
-
-	fmt.Printf("%s\n", b)
+	json.NewEncoder(res).Encode(data)
 }
 
 func main() {
