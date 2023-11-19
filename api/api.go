@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/dev-t2/learn-cryptocurrency/blockchain"
 	"github.com/dev-t2/learn-cryptocurrency/utils"
@@ -39,23 +40,23 @@ func docs(res http.ResponseWriter, req *http.Request) {
 		{ 
 			URL: url("/"), 
 			Method: "GET", 
-			Description: "Documentation",
+			Description: "Get Documentation",
 		},
 		{ 
 			URL: url("/blocks"), 
 			Method: "GET", 
-			Description: "Blocks",
+			Description: "Get Blocks",
 		},
 		{ 
 			URL: url("/blocks"), 
 			Method: "POST", 
-			Description: "Add Block", 
+			Description: "Post Block", 
 			Payload: "data: string", 
 		},
 		{ 
-			URL: url("/blocks/{id}"), 
+			URL: url("/blocks/{height}"), 
 			Method: "GET", 
-			Description: "Block",
+			Description: "Get Block",
 		},
 	}
 
@@ -81,9 +82,13 @@ func blocks(res http.ResponseWriter, req *http.Request) {
 
 func block(res http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
-	id := vars["id"]
+	height, err := strconv.Atoi(vars["height"])
+	
+	utils.HandleErr(err)
 
-	fmt.Println(id)
+	block := blockchain.GetBlockchain().Block(height)
+
+	json.NewEncoder(res).Encode(block)
 }
 
 func Start(port int) {
@@ -93,7 +98,7 @@ func Start(port int) {
 
 	router.HandleFunc("/blocks", blocks).Methods("GET", "POST")
 
-	router.HandleFunc("/blocks/{id:[0-9]+}", block).Methods("GET")
+	router.HandleFunc("/blocks/{height:[0-9]+}", block).Methods("GET")
 
 	addr = fmt.Sprintf(":%d", port)
 
