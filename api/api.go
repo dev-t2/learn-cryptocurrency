@@ -33,6 +33,10 @@ type addBlock struct {
 	Data string
 }
 
+type errResponse struct {
+	Message string `json:"message"`
+}
+
 func docs(res http.ResponseWriter, req *http.Request) {
 	res.Header().Add("Content-Type", "application/json")
 	
@@ -86,9 +90,14 @@ func block(res http.ResponseWriter, req *http.Request) {
 	
 	utils.HandleErr(err)
 
-	block := blockchain.GetBlockchain().Block(height)
+	block, err := blockchain.GetBlockchain().Block(height)
+	encoder := json.NewEncoder(res)
 
-	json.NewEncoder(res).Encode(block)
+	if err == blockchain.ErrNotFound {
+		encoder.Encode(errResponse{fmt.Sprint(err)})
+	} else {
+		encoder.Encode(block)
+	}
 }
 
 func Start(port int) {
