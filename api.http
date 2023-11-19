@@ -1,8 +1,8 @@
-http://localhost:8080
+GET http://localhost:8080
 
 ###
 
-http://localhost:8080/blocks
+GET http://localhost:8080/blocks
 
 ### 
 
