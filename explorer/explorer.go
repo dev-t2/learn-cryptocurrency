@@ -14,10 +14,7 @@ type homeData struct {
 	Blocks []*blockchain.Block
 }
 
-const (
-	port = ":8080"
-	dir = "explorer/templates"
-)
+const dir = "explorer/templates"
 
 var templates *template.Template
 
@@ -42,15 +39,19 @@ func addHandler (res http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func Start() {
+func Start(port int) {
 	templates = template.Must(template.ParseGlob(dir + "/pages/*.html"))
 	templates = template.Must(templates.ParseGlob(dir + "/partials/*.html"))
 
-	http.HandleFunc("/", homeHandler)
+	handler := http.NewServeMux()
 
-	http.HandleFunc("/add", addHandler)
+	handler.HandleFunc("/", homeHandler)
 
-	fmt.Printf("Listening on http://localhost%s\n", port)
+	handler.HandleFunc("/add", addHandler)
 
-	log.Fatal(http.ListenAndServe(port, nil))
+	addr := fmt.Sprintf(":%d", port)
+
+	fmt.Printf("Listening on http://localhost%s\n", addr)
+
+	log.Fatal(http.ListenAndServe(addr, handler))
 }

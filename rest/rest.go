@@ -10,12 +10,12 @@ import (
 	"github.com/dev-t2/learn-cryptocurrency/utils"
 )
 
-const port = ":8080"
+var addr string
 
 type url string
 
 func (u url) MarshalText() ([]byte, error) {
-	url := fmt.Sprintf("http://localhost%s%s", port, u)
+	url := fmt.Sprintf("http://localhost%s%s", addr, u)
 
 	return []byte(url), nil
 }
@@ -78,12 +78,16 @@ func blocks(res http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func Start() {
-	http.HandleFunc("/", docs)
+func Start(port int) {
+	handler := http.NewServeMux()
 
-	http.HandleFunc("/blocks", blocks)
+	handler.HandleFunc("/", docs)
 
-	fmt.Printf("Listening on http://localhost%s\n", port)
+	handler.HandleFunc("/blocks", blocks)
 
-	log.Fatal(http.ListenAndServe(port, nil))
+	addr = fmt.Sprintf(":%d", port)
+
+	fmt.Printf("Listening on http://localhost%s\n", addr)
+
+	log.Fatal(http.ListenAndServe(addr, handler))
 }
