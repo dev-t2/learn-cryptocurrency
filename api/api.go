@@ -37,9 +37,7 @@ type errResponse struct {
 	Message string `json:"message"`
 }
 
-func docs(res http.ResponseWriter, req *http.Request) {
-	res.Header().Add("Content-Type", "application/json")
-	
+func docs(res http.ResponseWriter, req *http.Request) {	
 	data := []urlDescription{
 		{ 
 			URL: url("/"), 
@@ -70,8 +68,6 @@ func docs(res http.ResponseWriter, req *http.Request) {
 func blocks(res http.ResponseWriter, req *http.Request) {
 	switch req.Method {
 	case "GET":
-		res.Header().Add("Content-Type", "application/json")
-
 		json.NewEncoder(res).Encode(blockchain.GetBlockchain().AllBlocks())
 	case "POST":
 		var addBlock addBlock
@@ -100,8 +96,18 @@ func block(res http.ResponseWriter, req *http.Request) {
 	}
 }
 
+func jsonContentTypeMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func (res http.ResponseWriter, req *http.Request) {
+		res.Header().Add("Content-Type", "application/json")
+
+		next.ServeHTTP(res, req)
+	})
+}
+
 func Start(port int) {
 	router := mux.NewRouter()
+
+	router.Use(jsonContentTypeMiddleware)
 
 	router.HandleFunc("/", docs).Methods("GET")
 
