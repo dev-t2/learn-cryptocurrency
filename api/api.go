@@ -8,6 +8,7 @@ import (
 
 	"github.com/dev-t2/learn-cryptocurrency/blockchain"
 	"github.com/dev-t2/learn-cryptocurrency/utils"
+	"github.com/gorilla/mux"
 )
 
 var addr string
@@ -78,16 +79,25 @@ func blocks(res http.ResponseWriter, req *http.Request) {
 	}
 }
 
+func block(res http.ResponseWriter, req *http.Request) {
+	vars := mux.Vars(req)
+	id := vars["id"]
+
+	fmt.Println(id)
+}
+
 func Start(port int) {
-	handler := http.NewServeMux()
+	router := mux.NewRouter()
 
-	handler.HandleFunc("/", docs)
+	router.HandleFunc("/", docs).Methods("GET")
 
-	handler.HandleFunc("/blocks", blocks)
+	router.HandleFunc("/blocks", blocks).Methods("GET", "POST")
+
+	router.HandleFunc("/blocks/{id:[0-9]+}", block).Methods("GET")
 
 	addr = fmt.Sprintf(":%d", port)
 
 	fmt.Printf("Listening on http://localhost%s\n", addr)
 
-	log.Fatal(http.ListenAndServe(addr, handler))
+	log.Fatal(http.ListenAndServe(addr, router))
 }

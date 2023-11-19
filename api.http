@@ -11,3 +11,7 @@ POST http://localhost:8080/blocks
 {
   "data": "Data for block"
 }
+
+###
+
+GET http://localhost:8080/blocks/123
